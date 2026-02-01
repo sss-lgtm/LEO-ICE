@@ -1,0 +1,38 @@
+{
+  "description": "区块链节点配置文件 - 用于映射StarryNet节点到区块链节点",
+  "global": {
+    "app_id": "zero_node",
+    "signature_algorithm": "SM2withSM3",
+    "grpc_timeout": 5000
+  },
+  "ground_stations": [
+    {
+      "gs_id": 1,
+      "node_name": "地面站1-根节点",
+      "blockchain_node": {
+        "node_identifier": "zero_node",
+        "channel_identifier": "0564eaf4858148c3aa8158a738797aa8",
+        "host": "192.168.110.243",
+        "port": 51051,
+        "ssl": true,
+        "ssl_mutual": false,
+        "sign_key_path": "chain-net/data/cert/org-1/30199da1daa94f1bb201821dae4d7d4b/sign_private_key.key"
+      }
+    }
+  ],
+  "satellites": [
+    {
+      "sat_id": 1,
+      "node_name": "卫星1-共识节点",
+      "blockchain_node": {
+        "node_identifier": "satellite_node_1",
+        "channel_identifier": "af65e522e1e844609c70bb847cb01775",
+        "host": "192.168.110.244",
+        "port": 51051,
+        "ssl": true,
+        "ssl_mutual": false,
+        "sign_key_path": "chain-net/data/cert/org-2/satellite1/sign_private_key.key"
+      }
+    }
+  ]
+}

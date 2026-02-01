@@ -1,0 +1,17 @@
+﻿{
+  "host_nodes_root": "/data/chain-net/nodes",
+  "container_map": {
+    "ovs_container_1": "node_1",
+    "ovs_container_2": "node_2"
+  },
+  "paths": {
+    "cfg": "cfg",
+    "cert": "cert",
+    "data": "data",
+    "jar": "env/node/raychain-node-5.0.jar"
+  },
+  "java_opts": "-Duser.timezone=GMT+08 -server -Xms1024M -Xmx1024M -XX:MaxDirectMemorySize=512M -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/app/dump",
+  "jar_name": "raychain-node-5.0.jar",
+  "start_targets": [],
+  "restart_if_running": false
+}

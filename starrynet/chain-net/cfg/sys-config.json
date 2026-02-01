@@ -1,0 +1,20 @@
+{
+  "chainNetDefaultOrg": {
+    "orgName": "链网默认组织-不能改",
+    "orgIdentifier": "01111111",
+    "operatingPeriodBegin": "2025-07-07 00:00:00",
+    "operatingPeriodEnd": "2027-07-07 00:00:00",
+    "legalPersonName": "法人代表名称",
+    "legalPersonIdCardNo": "身份证号码",
+    "legalEntityName": "法人主体名称",
+    "unifiedSocialCreditCode": "统一信用代码"
+  },
+  "rootCertArgs": {
+    "country": "CN",
+    "organization": "cdtv",
+    "organizationUnit": "root",
+    "locality": "chengdu",
+    "state": "sichuan",
+    "commonName": "chainnet.com"
+  }
+}
