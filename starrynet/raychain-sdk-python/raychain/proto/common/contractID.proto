@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "cn.mrray.raychain.sdk.grpc.common";
+package api;
+
+message ContractID {
+    string name = 1;
+    string version = 2;
+    string type = 3;
+    string language_type = 4; //1为GO，2为Java
+    string identity=5;//合约的表示tableName
+    string category=6;
+}

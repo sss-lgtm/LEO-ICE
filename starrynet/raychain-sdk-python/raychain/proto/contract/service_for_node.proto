@@ -1,0 +1,39 @@
+syntax = "proto3";
+import "common/rpc_common.proto";
+import "common/contractID.proto";
+
+option java_multiple_files = true;
+option java_package = "cn.mrray.raychain.sdk.grpc.contract";
+option java_outer_classname = "ContractServiceProto";
+package api;
+
+message ContractRequest {
+    string method = 1;
+    string payload = 2;
+    string channel_identifier = 3;
+    string sign = 4;
+    string app_id = 5;
+    string node_ip = 6;
+    repeated ContractID caller = 7;
+}
+
+message UploadContractRequest {
+    ContractID contract_id = 1;
+    string channel_identifier = 2;
+    string app_id = 3;
+    string sign = 4;
+    string contract_input = 5;
+    string file_name = 6;
+    bytes content = 7;
+    int64 file_size = 8;
+    bool is_last = 9;
+}
+
+service ContractService {
+    rpc invoke (ContractRequest) returns (RpcReply) {
+    }
+    rpc initContract (ContractRequest) returns (RpcReply) {
+    }
+    rpc deployContract (stream UploadContractRequest) returns (RpcReply) {
+    }
+}

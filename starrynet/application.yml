@@ -1,0 +1,21 @@
+# 区块链相关配置
+raybaas:
+  rayBaasUrl: http://121.48.164.134:32000/raybaas/raybaas-server/
+  clientCount: 5 # 每个node克隆多少客户端
+  app:
+    appId: 7bff4c20c76e0a74be3fbdec6cde8dc036433996 # 应用ID
+    privateKeyPath: sm2_private_7bff4c20c76e0a74be3fbdec6cde8dc036433996.key # 证书路径
+  ssl:
+    enabled: true #arm环境需要手动修改成false，x86不需要修改
+    sslMutual: false
+  cryptology:
+    signatureAlgorithm: SM2 # 签名算法，默认SM2（可选：SM2、RSA、ECDSA、ED_25519）
+    hashAlgorithm: SM3 # 哈希算法，默认SM3（可选：SM3、SHA256）
+    factory: RAY # 提供算法的厂家代码 （RAY：迅鳐  CFCA: CFCA）
+    algorithmLibParams: 
+  channels:
+    channel[0]:
+      name: ae10f14328eb4423b75481f70ad076bb #通道名称
+      grpcHostAndPort: 192.168.110.157:40005:CONSENSUS #节点 grpc 地址，多个以“;”号分割
+      httpHostAndPort: 192.168.110.157:40000:CONSENSUS #节点http地址，多个以“;”号分割
+      grpcTimeOut: 3000 #grpc超时时间

@@ -84,7 +84,7 @@ class NodeCommandClient:
     节点命令客户端，用于调用节点的命令接口
     """
 
-    def __init__(self, host, port, app_id="zero_node", sign_key_path=None):
+    def __init__(self, host, port, app_id="node_62WvJxio7o7p", sign_key_path=None):
         """
         初始化NodeCommandClient
 
@@ -108,7 +108,7 @@ class NodeCommandClient:
             
             # 如果上述文件不存在，使用org-1目录下的sign_private_key.key
             if not os.path.exists(self.sign_key_path):
-                self.sign_key_path = 'chain-net/data/cert/org-1/30199da1daa94f1bb201821dae4d7d4b/sign_private_key.key'
+                self.sign_key_path = '/data/chain-net/node_62WvJxio7o7p/node/data/cert/node_62WvJxio7o7p/4d3fbd7679754966b0e6f5b020c08497/sign_private_key.key'
         else:
             self.sign_key_path = sign_key_path
         
@@ -129,7 +129,7 @@ class NodeCommandClient:
                 ]
             },
             "app": {
-                "appId": app_id
+                "appId": "app_id"
             },
             "cryptology": {
                 "signatureAlgorithm": "SM2withSM3"
@@ -149,7 +149,7 @@ class NodeCommandClient:
             host=host,
             port=port,
             node_type="CONSENSUS",
-            channel_identifier="af65e522e1e844609c70bb847cb01775",
+            channel_identifier="1330c9aaec6a40fca235c660aded8b46",
             sdk_properties=self.sdk_properties
         )
         print(f"[NodeCommandClient] gRPC客户端初始化完成")
@@ -206,7 +206,7 @@ class NodeCommandClient:
         try:
             # 创建基础命令对象
             base_command = BaseCommand()
-            base_command.cmdOperateType = CmdOperateType.get_code("start")
+            base_command.cmdOperateType = CmdOperateType.get_code("read")
             base_command.cmdType = CmdType.get_code("network")
             base_command.payload = "none"
             
@@ -221,7 +221,7 @@ class NodeCommandClient:
             
             # 构建CommandRequest
             command_request = admin_pb2.CommandRequest(
-                app_id=self.app_id,
+                app_id="node_62WvJxio7o7p",
                 cmd=CmdType.get_code("network"),
                 payload=payload,
                 sign=signature

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+import "common/contractID.proto";
+import "common/rpc_common.proto";
+option java_multiple_files = true;
+option java_package = "cn.mrray.raychain.sdk.grpc.node";
+option java_outer_classname = "NodeServiceProto";
+package api;
+//SDK发送交易
+message SdkSendTransactionRequest {
+    string payload = 1;
+    string sign = 2;
+    string app_id = 3;
+}
+//交易通知流请求
+message TxNotifyStreamRequest {
+    uint64 blockHeight = 1;
+}
+//交易通知流响应
+message TxNotifyStreamReply {
+    uint64 blockHeight = 1;
+    repeated string txHash = 2;
+}
+
+
+service SdkInvokeService {
+    rpc invoke (SdkInvokeRequest) returns (RpcReply) {
+    }
+    rpc query (SdkInvokeRequest) returns (RpcReply) {
+    }
+    rpc sendTransaction (SdkSendTransactionRequest) returns (RpcReply) {
+    }
+    rpc txNotify (stream TxNotifyStreamRequest) returns (stream TxNotifyStreamReply) {
+    }
+}

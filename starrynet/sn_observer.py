@@ -508,7 +508,7 @@ class Observer():
                 Q.append("            stub yes;")
                 Q.append("        };")
         # 2. 通告物理接口 (建立邻居)
-                Q.append("        interface \"B*\", \"eth*\" {")
+                Q.append("        interface \"B*\" {")
                 Q.append("            type broadcast;")
                 Q.append("            cost 256;")
                 Q.append("            hello " + str(self.hello_interval) + ";")

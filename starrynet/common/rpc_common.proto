@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "common/contractID.proto";
+
+option java_multiple_files = true;
+option java_package = "cn.mrray.raychain.sdk.grpc.common";
+package api;
+
+message RpcReply {
+    int32 code = 1;
+    string message = 2;
+    string payload = 3;
+    string txHash = 4;
+}
+
+//SDK调用节点
+message SdkInvokeRequest {
+    ContractID contract_id = 1;
+    string method = 2;
+    string payload = 3;
+    string channel_identifier = 4;
+    string app_id = 5;
+    string app_type = 6;
+    string sign = 7;
+}

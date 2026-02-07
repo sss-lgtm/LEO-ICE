@@ -393,10 +393,10 @@ class sn_Node_Init_Thread(threading.Thread):
 
 def sn_get_container_info(remote_machine_ssh):
     #  Read all container information in all_container_info
-    all_container_info = sn_remote_cmd(remote_machine_ssh, "docker ps")
-    n_container = len(all_container_info) - 1
+    all_container_info = sn_remote_cmd(remote_machine_ssh, """docker ps --filter "name=^/(constellation-test|ovs_container)" --format "{{.ID}}" """)
+    n_container = len(all_container_info)
     container_id_list = []
-    for container_idx in range(1, n_container + 1):
+    for container_idx in range(0, n_container):
         container_id_list.append(all_container_info[container_idx].split()[0])
 
     return container_id_list
@@ -416,7 +416,8 @@ def sn_reset_docker_env(remote_ssh, docker_service_name, node_size):
     print("Remove legacy containers.")
     print(sn_remote_cmd(remote_ssh,
                         "docker service rm " + docker_service_name))
-    print(sn_remote_cmd(remote_ssh, "docker rm -f $(docker ps -a -q)"))
+    print(sn_remote_cmd(remote_ssh, """docker ps -a --filter "name=^/constellation-test" --format "{{.ID}}" | xargs -r docker rm -f"""))
+    print(sn_remote_cmd(remote_ssh, """docker ps -a --filter "name=^/ovs_container" --format "{{.ID}}" | xargs -r docker rm -f"""))
     print("Remove legacy emulated ISLs.")
     sn_delete_remote_network_bridge(remote_ssh)
     print("Creating new containers...")
@@ -424,9 +425,7 @@ def sn_reset_docker_env(remote_ssh, docker_service_name, node_size):
         remote_ssh, "docker service create --replicas " + str(node_size) +
         " --name " + str(docker_service_name) +
         " --sysctl net.ipv6.conf.all.disable_ipv6=0 " +
-        " --sysctl net.ipv6.conf.default.disable_ipv6=0 " +
-        " --sysctl net.ipv6.conf.all.forwarding=1 " +
-        " --sysctl net.ipv6.conf.default.forwarding=1 " +
+        "--sysctl net.ipv6.conf.all.forwarding=1 " +
         " --cap-add ALL starrynet:latest tail -f /dev/null")
 
 
@@ -1104,12 +1103,6 @@ def sn_establish_new_GSL(container_id_list, matrix, constellation_size, bw,
                     "ip link set dev " + new_name + " up"
         full_cmd = "docker exec " + str(container_id_list[i - 1]) + " /bin/sh -c '" + chain_cmd + "'"
         sn_remote_cmd(remote_ssh, full_cmd)
-        # 2. 再开启参数 (使用 nsenter)
-        # 获取 PID -> 进入网络空间 -> 修改参数
-        nsenter_cmd = "PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[i - 1]) + ") && " + \
-                      "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".disable_ipv6=0 && " + \
-                      "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".forwarding=1"
-        sn_remote_cmd(remote_ssh, nsenter_cmd)
         
         tc_cmd = "docker exec -d " + str(container_id_list[i - 1]) + " "
         sn_remote_cmd(remote_ssh, tc_cmd + "tc qdisc add dev " + new_name + " root netem delay " + str(delay) + "ms loss " + str(loss) + "% rate " + str(bw) + "Gbps")
@@ -1162,12 +1155,6 @@ def sn_establish_new_GSL(container_id_list, matrix, constellation_size, bw,
                     "ip link set dev " + new_name + " up"
         full_cmd = "docker exec " + str(container_id_list[j - 1]) + " /bin/sh -c '" + chain_cmd + "'"
         sn_remote_cmd(remote_ssh, full_cmd)
-        
-        # 使用 nsenter 强行修改
-        nsenter_cmd = "PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[j - 1]) + ") && " + \
-                      "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".disable_ipv6=0 && " + \
-                      "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".forwarding=1"
-        sn_remote_cmd(remote_ssh, nsenter_cmd)
         
         tc_cmd = "docker exec -d " + str(container_id_list[j - 1]) + " "
         sn_remote_cmd(remote_ssh, tc_cmd + "tc qdisc add dev " + new_name + " root netem delay " + str(delay) + "ms loss " + str(loss) + "% rate " + str(bw) + "Gbps")

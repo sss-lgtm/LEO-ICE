@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+import "common/contractID.proto";
+import "common/rpc_common.proto";
+option java_multiple_files = true;
+option java_package = "cn.mrray.raychain.sdk.grpc.node";
+option java_outer_classname = "NodeServiceProto";
+package api;
+
+//更新证书
+message UpdateCertRequest {
+    string channel_identifier = 1;
+    string payload = 2;
+    string app_id = 3;
+    string sign = 4;
+}
+
+//消息监听请求
+message MsgNotifyStreamRequest {
+    string app_id = 1;
+    string sign = 2;
+}
+message CommandRequest {
+    string app_id = 1;
+    string payload = 2;
+    string cmd = 3;
+    string sign = 4;
+}
+//消息通知
+message MsgNotifyStreamReply {
+    string message = 1;
+}
+message DeployContractRequest {
+    string channel_identifier = 1;
+    string app_id = 2;
+    string sign = 3;
+    string payload = 4;
+    string contract_input = 5;
+    string file_name = 6;
+    bytes content = 7;
+    int64 file_size = 8;
+    bool is_last = 9;
+}
+
+service SdkAdminInvokeService {
+    rpc createChannel (SdkInvokeRequest) returns (RpcReply) {
+    }
+    rpc chainNetJoinChannel (SdkInvokeRequest) returns (RpcReply) {
+    }
+    rpc chainNetExitChannel (SdkInvokeRequest) returns (RpcReply) {
+    }
+    rpc updateCertRequest (UpdateCertRequest) returns (RpcReply) {
+    }
+    rpc msgNotify (stream MsgNotifyStreamRequest) returns (stream MsgNotifyStreamReply) {
+    }
+    rpc command (CommandRequest) returns (RpcReply) {
+    }
+    rpc uploadContract (stream DeployContractRequest) returns (RpcReply) {
+    }
+    rpc enrollCert (SdkInvokeRequest) returns (RpcReply) {
+    }
+}

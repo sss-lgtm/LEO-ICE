@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+import "common/contractID.proto";
+import "common/rpc_common.proto";
+
+option java_multiple_files = true;
+option java_package = "cn.mrray.raychain.sdk.grpc.node";
+option java_outer_classname = "NodeContractServiceProto";
+package api;
+
+message ContractStateRequest {
+    ContractID contract_id = 1;
+    string method = 2;
+    string key = 3;
+    string payload = 4;
+    string sign = 5;
+    string app_id = 6;
+    string channel_identifier = 7;
+    string table = 8;
+    string sql = 9;
+    string sql_params = 10;
+}
+
+message ContractCrossRequest {
+    ContractID contract_id = 1;
+    string method = 2;
+    string payload = 3;
+    string channel_identifier = 4;
+    string app_id = 5;
+    repeated ContractID caller = 6;
+}
+
+service NodeContractService {
+    rpc getVersionedValue (ContractStateRequest) returns (RpcReply) {
+    }
+    rpc getRdbVersionedValue (ContractStateRequest) returns (RpcReply) {
+    }
+    rpc invokeContract (ContractCrossRequest) returns (RpcReply) {
+    }
+}
+

@@ -121,14 +121,6 @@ def sn_ISL_establish(current_sat_id, current_orbit_id, container_id_list,
                   " ip link set dev " + target_interface + " name " + "B" +
                   str(current_orbit_id * sat_num + current_sat_id + 1) +
                   "-eth" + str(down_orbit_id * sat_num + down_sat_id + 1))
-        # [插入代码开始]
-        new_name = "B" + str(current_orbit_id * sat_num + current_sat_id + 1) + "-eth" + str(down_orbit_id * sat_num + down_sat_id + 1)
-        # 获取 PID 并通过 nsenter 修改，无需容器特权
-        os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[current_orbit_id * sat_num + current_sat_id]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".disable_ipv6=0")
-        os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[current_orbit_id * sat_num + current_sat_id]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".forwarding=1")
-        # [插入代码结束]
         os.system("docker exec -d " +
                   str(container_id_list[current_orbit_id * sat_num +
                                         current_sat_id]) +
@@ -168,14 +160,6 @@ def sn_ISL_establish(current_sat_id, current_orbit_id, container_id_list,
                   target_interface + " name " + "B" +
                   str(down_orbit_id * sat_num + down_sat_id + 1) + "-eth" +
                   str(current_orbit_id * sat_num + current_sat_id + 1))
-        # [插入]
-        new_name = "B" + str(down_orbit_id * sat_num + down_sat_id + 1) + "-eth" + str(current_orbit_id * sat_num + current_sat_id + 1)
-        # 获取 PID 并通过 nsenter 修改，无需容器特权
-        os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[down_orbit_id * sat_num + down_sat_id]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".disable_ipv6=0")
-        os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[down_orbit_id * sat_num + down_sat_id]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".forwarding=1")
-        # [结束]
         os.system("docker exec -d " +
                   str(container_id_list[down_orbit_id * sat_num +
                                         down_sat_id]) + " ip link set dev B" +
@@ -241,14 +225,6 @@ def sn_ISL_establish(current_sat_id, current_orbit_id, container_id_list,
                   " ip link set dev " + target_interface + " name " + "B" +
                   str(current_orbit_id * sat_num + current_sat_id + 1) +
                   "-eth" + str(right_orbit_id * sat_num + right_sat_id + 1))
-        # [插入]
-        new_name = "B" + str(current_orbit_id * sat_num + current_sat_id + 1) + "-eth" + str(right_orbit_id * sat_num + right_sat_id + 1)
-        # 获取 PID 并通过 nsenter 修改，无需容器特权
-        os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[current_orbit_id * sat_num + current_sat_id]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".disable_ipv6=0")
-        os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[current_orbit_id * sat_num + current_sat_id]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".forwarding=1")
-        # [结束]
         os.system("docker exec -d " +
                   str(container_id_list[current_orbit_id * sat_num +
                                         current_sat_id]) +
@@ -289,13 +265,6 @@ def sn_ISL_establish(current_sat_id, current_orbit_id, container_id_list,
                   target_interface + " name " + "B" +
                   str(right_orbit_id * sat_num + right_sat_id + 1) + "-eth" +
                   str(current_orbit_id * sat_num + current_sat_id + 1))
-        # [插入]
-        new_name = "B" + str(right_orbit_id * sat_num + right_sat_id + 1) + "-eth" + str(current_orbit_id * sat_num + current_sat_id + 1)
-        os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[right_orbit_id * sat_num + right_sat_id]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".disable_ipv6=0")
-        os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[right_orbit_id * sat_num + right_sat_id]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".forwarding=1")
-        # [结束]
         os.system("docker exec -d " +
                   str(container_id_list[right_orbit_id * sat_num +
                                         right_sat_id]) + " ip link set dev B" +
@@ -347,12 +316,12 @@ def sn_get_param(file_):
 
 def sn_get_container_info():
     #  Read all container information in all_container_info
-    with os.popen("docker ps") as f:
+    with os.popen("""docker ps --filter "name=^/(constellation-test|ovs_container)" --format "{{.ID}}" """) as f:
         all_container_info = f.readlines()
-        n_container = len(all_container_info) - 1
+        n_container = len(all_container_info)
 
     container_id_list = []
-    for container_idx in range(1, n_container + 1):
+    for container_idx in range(0, n_container):
         container_id_list.append(all_container_info[container_idx].split()[0])
 
     return container_id_list
@@ -394,13 +363,6 @@ def sn_establish_GSL(container_id_list, matrix, GS_num, constellation_size, bw,
                 os.system("docker exec -d " + str(container_id_list[i - 1]) +
                           " ip link set dev " + target_interface + " name " +
                           "B" + str(i - 1 + 1) + "-eth" + str(j))
-                # [插入]
-                new_name = "B" + str(i - 1 + 1) + "-eth" + str(j)
-                os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[i - 1]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".disable_ipv6=0")
-                os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[i - 1]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".forwarding=1")
-                # [结束]
                 os.system("docker exec -d " + str(container_id_list[i - 1]) +
                           " ip link set dev B" + str(i - 1 + 1) + "-eth" +
                           str(j) + " up")
@@ -427,13 +389,6 @@ def sn_establish_GSL(container_id_list, matrix, GS_num, constellation_size, bw,
                 os.system("docker exec -d " + str(container_id_list[j - 1]) +
                           " ip link set dev " + target_interface + " name " +
                           "B" + str(j) + "-eth" + str(i - 1 + 1))
-                # [插入]
-                new_name = "B" + str(j) + "-eth" + str(i - 1 + 1)
-                os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[j - 1]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".disable_ipv6=0")
-                os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[j - 1])+ ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".forwarding=1")
-                # [结束]
                 os.system("docker exec -d " + str(container_id_list[j - 1]) +
                           " ip link set dev B" + str(j) + "-eth" +
                           str(i - 1 + 1) + " up")
@@ -467,13 +422,6 @@ def sn_establish_GSL(container_id_list, matrix, GS_num, constellation_size, bw,
             os.system("docker exec -d " + str(container_id_list[j - 1]) +
                       " ip link set dev " + target_interface + " name " + "B" +
                       str(j - 1 + 1) + "-default")
-            # [插入]
-            new_name = "B" + str(j - 1 + 1) + "-default"
-            os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[j - 1]) + ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".disable_ipv6=0")
-            os.system("PID=$(docker inspect --format '{{.State.Pid}}' " + str(container_id_list[j - 1])+ ") && " +
-          "nsenter -t $PID -n sysctl -w net.ipv6.conf." + new_name + ".forwarding=1")
-            # [结束]
             os.system("docker exec -d " + str(container_id_list[j - 1]) +
                       " ip link set dev B" + str(j - 1 + 1) + "-default" +
                       " up")
